@@ -1,0 +1,28 @@
+{
+  "require": {
+    "illuminate/container": "^10.48",
+    "illuminate/database": "*",
+    "illuminate/events": "^10.48",
+    "topthink/think-orm": "*",
+    "illuminate/queue": "^10.48",
+    "illuminate/log": "^10.48",
+    "illuminate/redis": "^10.48",
+    "illuminate/config": "^10.48",
+    "illuminate/cache": "^10.48",
+    "symfony/cache": "^6.4",
+    "ext-pcntl": "*",
+    "doctrine/orm": "^3.2",
+    "doctrine/dbal": "^3.9"
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://mirrors.huaweicloud.com/repository/php/"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "demo\\": "src/"
+    }
+  }
+}
