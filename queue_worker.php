@@ -14,6 +14,5 @@ echo "Listening to queue... \n";
 
 $options = new WorkerOptions();
 while (true) {
-    pcntl_signal_dispatch();   // 处理信号
     $worker->runNextJob('redis', 'default', $options);  // redis 连接和队列名称
 }
