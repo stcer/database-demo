@@ -3,7 +3,7 @@
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 
-require_once __DIR__ . '/boot_laravel.php';
+require_once __DIR__ . '/laravel_boot.php';
 
 // 队列 Worker 监听任务
 $app = app();

@@ -3,15 +3,14 @@
 use demo\MyDelayedJob;
 use Illuminate\Support\Facades\Queue;
 
-require_once __DIR__ . '/boot_laravel.php';
+require_once __DIR__ . '/laravel_boot.php';
 
 // 创建作业实例并推送到队列
 $job = new MyDelayedJob(['key' => 'value']);
 
 // 将作业推送到队列
-$app = app();
 /** @var Illuminate\Queue\QueueManager $queue */
-$queue = $app->make('queue');
+$queue = app('queue');
 $conn = $queue->connection();
 $conn->push($job);
 
