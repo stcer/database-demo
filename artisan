@@ -1,25 +1,22 @@
 #!/usr/bin/env php
 <?php
 
-use demo\Console\Kernel;
-use demo\Console\Providers\ConsoleSupportServiceProvider;
-
 define('LARAVEL_START', microtime(true));
 require __DIR__.'/laravel_boot.php';
 
 $app = app();
 $app->singleton(
     Illuminate\Contracts\Foundation\Application::class,
-    \demo\Application::class
+    demo\Application::class
 );
 
 $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
-    Kernel::class
+    demo\Console\Kernel::class
 );
 
 $app->registers([
-    ConsoleSupportServiceProvider::class,
+    demo\Console\Providers\ConsoleSupportServiceProvider::class,
 ]);
 
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
