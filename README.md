@@ -15,3 +15,9 @@ php bin/doctrine orm:schema-tool:create
 php bin/doctrine orm:schema-tool:update --force
 php bin/doctrine orm:schema-tool:update --force --dump-sql
 ```
+
+## Eloquent
+
+```
+php artisan migrate
+```

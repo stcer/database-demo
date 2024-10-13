@@ -3,8 +3,11 @@
 use demo\Application;
 use demo\ErrorHandler;
 use Illuminate\Bus\BusServiceProvider;
+use Illuminate\Cache\CacheServiceProvider;
 use Illuminate\Config\Repository;
+use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Events\EventServiceProvider;
+use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Log\LogServiceProvider;
 use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Redis\RedisServiceProvider;
@@ -27,8 +30,39 @@ function now($tz = null)
     return Date::now($tz);
 }
 
+if (! function_exists('config')) {
+    function config($key = null, $default = null)
+    {
+        if (is_null($key)) {
+            return app('config');
+        }
+
+        if (is_array($key)) {
+            return app('config')->set($key);
+        }
+
+        return app('config')->get($key, $default);
+    }
+}
+
+if (! function_exists('rescue')) {
+    function rescue(callable $callback, $rescue = null, $report = true)
+    {
+        try {
+            return $callback();
+        } catch (Throwable $e) {
+            if (value($report, $e)) {
+//                report($e);
+            }
+
+            return value($rescue, $e);
+        }
+    }
+}
+
 $app = app();
 $config = [
+    'app' => 'dev',
     'database' => [
         'redis' => [
             'default' => [
@@ -38,6 +72,32 @@ $config = [
                 'database' => 0,
             ],
         ],
+        'default' => env('DB_CONNECTION', 'sqlite'),
+        'connections' => [
+            'sqlite' => [
+                'driver' => 'sqlite',
+                'url' => env('DATABASE_URL'),
+                'database' => env('DB_DATABASE', __DIR__ . '/storage/db.sqlite'),
+                'prefix' => '',
+                'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            ],
+            'mysql' => [
+                'driver' => 'mysql',
+                'url' => env('DATABASE_URL'),
+                'host' => env('DB_HOST', '127.0.0.1'),
+                'port' => env('DB_PORT', '3306'),
+                'database' => env('DB_DATABASE', 'forge'),
+                'username' => env('DB_USERNAME', 'forge'),
+                'password' => env('DB_PASSWORD', ''),
+                'unix_socket' => env('DB_SOCKET', ''),
+                'charset' => 'utf8mb4',
+                'collation' => null,
+                'prefix' => '',
+                'prefix_indexes' => true,
+                'strict' => true,
+                'engine' => null,
+            ]
+        ]
     ],
 
     'queue' => [
@@ -88,13 +148,13 @@ $app->singleton(
 
 Facade::setFacadeApplication($app);
 $app->registerCoreContainerAliases();
-
-foreach ([
+$app->registers([
     EventServiceProvider::class,
+    FilesystemServiceProvider::class,
     LogServiceProvider::class,
     QueueServiceProvider::class,
     RedisServiceProvider::class,
     BusServiceProvider::class,
-] as $provider) {
-    $app->register($provider);
-}
+    DatabaseServiceProvider::class,
+    CacheServiceProvider::class
+]);

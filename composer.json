@@ -1,16 +1,21 @@
 {
   "require": {
-    "illuminate/container": "^10.48",
+    "ext-pcntl": "*",
+
     "illuminate/database": "*",
+
     "illuminate/events": "^10.48",
-    "topthink/think-orm": "*",
     "illuminate/queue": "^10.48",
     "illuminate/log": "^10.48",
     "illuminate/redis": "^10.48",
     "illuminate/config": "^10.48",
     "illuminate/cache": "^10.48",
     "symfony/cache": "^6.4",
-    "ext-pcntl": "*",
+    "vlucas/phpdotenv": "^5.6",
+    "symfony/event-dispatcher": "^7.1",
+
+    "topthink/think-orm": "*",
+
     "doctrine/orm": "^3.2",
     "doctrine/dbal": "^3.9"
   },

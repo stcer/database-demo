@@ -12,7 +12,7 @@ use function is_string;
 use function method_exists;
 use function property_exists;
 
-class Application extends Container
+class Application extends Container implements \Illuminate\Contracts\Foundation\Application
 {
     /**
      * @var array
@@ -32,10 +32,10 @@ class Application extends Container
 
     protected $serviceProviders = [];
 
-    public function storagePath(): string
+    public function storagePath($path = '')
     {
-        if (! isset($this->storagePath)) {
-            $this->storagePath = __DIR__.'/../storage';
+        if (!isset($this->storagePath)) {
+            $this->storagePath = __DIR__ . '/../storage';
         }
 
         return $this->storagePath;
@@ -44,7 +44,7 @@ class Application extends Container
     /**
      * Get the registered service provider instance if it exists.
      *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
+     * @param \Illuminate\Support\ServiceProvider|string $provider
      * @return \Illuminate\Support\ServiceProvider|null
      */
     public function getProvider($provider)
@@ -55,7 +55,7 @@ class Application extends Container
     /**
      * Get the registered service provider instances if any exist.
      *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
+     * @param \Illuminate\Support\ServiceProvider|string $provider
      * @return array
      */
     public function getProviders($provider)
@@ -70,7 +70,7 @@ class Application extends Container
     /**
      * Resolve a service provider instance from the class name.
      *
-     * @param  string  $provider
+     * @param string $provider
      * @return \Illuminate\Support\ServiceProvider
      */
     public function resolveProvider($provider)
@@ -81,7 +81,7 @@ class Application extends Container
     /**
      * Mark the given provider as registered.
      *
-     * @param  \Illuminate\Support\ServiceProvider  $provider
+     * @param \Illuminate\Support\ServiceProvider $provider
      * @return void
      */
     protected function markAsRegistered($provider)
@@ -105,7 +105,7 @@ class Application extends Container
     /**
      * Determine if the given service provider is loaded.
      *
-     * @param  string  $provider
+     * @param string $provider
      * @return bool
      */
     public function providerIsLoaded(string $provider)
@@ -126,7 +126,7 @@ class Application extends Container
     /**
      * Boot the given service provider.
      *
-     * @param  \Illuminate\Support\ServiceProvider  $provider
+     * @param \Illuminate\Support\ServiceProvider $provider
      * @return void
      */
     protected function bootProvider(ServiceProvider $provider)
@@ -140,9 +140,16 @@ class Application extends Container
         $provider->callBootedCallbacks();
     }
 
+    public function registers(array $providers)
+    {
+        foreach ($providers as $provider) {
+            $this->register($provider);
+        }
+    }
+
     public function register($provider, $force = false)
     {
-        if (($registered = $this->getProvider($provider)) && ! $force) {
+        if (($registered = $this->getProvider($provider)) && !$force) {
             return $registered;
         }
 
@@ -192,29 +199,28 @@ class Application extends Container
     public function registerCoreContainerAliases()
     {
         foreach ([
-            'app' => [self::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class, \Psr\Container\ContainerInterface::class],
-            'auth.driver' => [\Illuminate\Contracts\Auth\Guard::class],
-            'cache' => [\Illuminate\Cache\CacheManager::class, \Illuminate\Contracts\Cache\Factory::class],
-            'cache.store' => [\Illuminate\Cache\Repository::class, \Illuminate\Contracts\Cache\Repository::class, \Psr\SimpleCache\CacheInterface::class],
-            'cache.psr6' => [\Symfony\Component\Cache\Adapter\Psr16Adapter::class, \Symfony\Component\Cache\Adapter\AdapterInterface::class, \Psr\Cache\CacheItemPoolInterface::class],
-            'config' => [\Illuminate\Config\Repository::class, \Illuminate\Contracts\Config\Repository::class],
-            'db' => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
-            'db.connection' => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
-            'db.schema' => [\Illuminate\Database\Schema\Builder::class],
-            'events' => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
-            'files' => [\Illuminate\Filesystem\Filesystem::class],
-            'filesystem' => [\Illuminate\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
-            'filesystem.disk' => [\Illuminate\Contracts\Filesystem\Filesystem::class],
-            'filesystem.cloud' => [\Illuminate\Contracts\Filesystem\Cloud::class],
-            'hash.driver' => [\Illuminate\Contracts\Hashing\Hasher::class],
-            'log' => [\Illuminate\Log\LogManager::class, \Psr\Log\LoggerInterface::class],
-            'queue' => [\Illuminate\Queue\QueueManager::class, \Illuminate\Contracts\Queue\Factory::class, \Illuminate\Contracts\Queue\Monitor::class],
-            'queue.connection' => [\Illuminate\Contracts\Queue\Queue::class],
-            'queue.failer' => [\Illuminate\Queue\Failed\FailedJobProviderInterface::class],
-            'redis' => [\Illuminate\Redis\RedisManager::class, \Illuminate\Contracts\Redis\Factory::class],
-            'redis.connection' => [\Illuminate\Redis\Connections\Connection::class, \Illuminate\Contracts\Redis\Connection::class],
-            'view' => [\Illuminate\View\Factory::class, \Illuminate\Contracts\View\Factory::class],
-        ] as $key => $aliases) {
+                     'app' => [self::class, \Illuminate\Contracts\Container\Container::class, \Illuminate\Contracts\Foundation\Application::class, \Psr\Container\ContainerInterface::class],
+                     'auth.driver' => [\Illuminate\Contracts\Auth\Guard::class],
+                     'cache' => [\Illuminate\Cache\CacheManager::class, \Illuminate\Contracts\Cache\Factory::class],
+                     'cache.store' => [\Illuminate\Cache\Repository::class, \Illuminate\Contracts\Cache\Repository::class, \Psr\SimpleCache\CacheInterface::class],
+                     'cache.psr6' => [\Symfony\Component\Cache\Adapter\Psr16Adapter::class, \Symfony\Component\Cache\Adapter\AdapterInterface::class, \Psr\Cache\CacheItemPoolInterface::class],
+                     'config' => [\Illuminate\Config\Repository::class, \Illuminate\Contracts\Config\Repository::class],
+                     'db' => [\Illuminate\Database\DatabaseManager::class, \Illuminate\Database\ConnectionResolverInterface::class],
+                     'db.connection' => [\Illuminate\Database\Connection::class, \Illuminate\Database\ConnectionInterface::class],
+                     'db.schema' => [\Illuminate\Database\Schema\Builder::class],
+                     'events' => [\Illuminate\Events\Dispatcher::class, \Illuminate\Contracts\Events\Dispatcher::class],
+                     'files' => [\Illuminate\Filesystem\Filesystem::class],
+                     'filesystem' => [\Illuminate\Filesystem\FilesystemManager::class, \Illuminate\Contracts\Filesystem\Factory::class],
+                     'filesystem.disk' => [\Illuminate\Contracts\Filesystem\Filesystem::class],
+                     'filesystem.cloud' => [\Illuminate\Contracts\Filesystem\Cloud::class],
+                     'hash.driver' => [\Illuminate\Contracts\Hashing\Hasher::class],
+                     'log' => [\Illuminate\Log\LogManager::class, \Psr\Log\LoggerInterface::class],
+                     'queue' => [\Illuminate\Queue\QueueManager::class, \Illuminate\Contracts\Queue\Factory::class, \Illuminate\Contracts\Queue\Monitor::class],
+                     'queue.connection' => [\Illuminate\Contracts\Queue\Queue::class],
+                     'queue.failer' => [\Illuminate\Queue\Failed\FailedJobProviderInterface::class],
+                     'redis' => [\Illuminate\Redis\RedisManager::class, \Illuminate\Contracts\Redis\Factory::class],
+                     'redis.connection' => [\Illuminate\Redis\Connections\Connection::class, \Illuminate\Contracts\Redis\Connection::class],
+                 ] as $key => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($key, $alias);
             }
@@ -224,5 +230,135 @@ class Application extends Container
     public function isDownForMaintenance(): bool
     {
         return false;
+    }
+
+    public function hasBeenBootstrapped()
+    {
+        return true;
+    }
+
+    public function loadDeferredProviders()
+    {
+
+    }
+
+    public function version()
+    {
+        return '0.0.1';
+    }
+
+    public function basePath($path = '')
+    {
+        return __DIR__ . '/../';
+    }
+
+    public function bootstrapPath($path = '')
+    {
+        return $this->basePath() . 'bootstrap/';
+    }
+
+    public function configPath($path = '')
+    {
+        return $this->basePath() . 'config/';
+    }
+
+    public function databasePath($path = '')
+    {
+        return $this->basePath() . 'storage/database/';
+    }
+
+    public function langPath($path = '')
+    {
+        return $this->basePath() . 'lang/';
+    }
+
+    public function publicPath($path = '')
+    {
+        return $this->basePath() . 'www/';
+    }
+
+    public function resourcePath($path = '')
+    {
+        return $this->basePath() . 'resource/';
+    }
+
+    public function environment(...$environments)
+    {
+        // TODO: Implement environment() method.
+    }
+
+    public function runningInConsole()
+    {
+        return true;
+    }
+
+    public function hasDebugModeEnabled()
+    {
+        // TODO: Implement hasDebugModeEnabled() method.
+    }
+
+    public function maintenanceMode()
+    {
+        // TODO: Implement maintenanceMode() method.
+    }
+
+    public function registerConfiguredProviders()
+    {
+        // TODO: Implement registerConfiguredProviders() method.
+    }
+
+    public function registerDeferredProvider($provider, $service = null)
+    {
+        // TODO: Implement registerDeferredProvider() method.
+    }
+
+    public function boot()
+    {
+        // TODO: Implement boot() method.
+    }
+
+    public function booting($callback)
+    {
+        // TODO: Implement booting() method.
+    }
+
+    public function booted($callback)
+    {
+        // TODO: Implement booted() method.
+    }
+
+    public function bootstrapWith(array $bootstrappers)
+    {
+        // TODO: Implement bootstrapWith() method.
+    }
+
+    public function getLocale()
+    {
+        // TODO: Implement getLocale() method.
+    }
+
+    public function getNamespace()
+    {
+        // TODO: Implement getNamespace() method.
+    }
+
+    public function setLocale($locale)
+    {
+        // TODO: Implement setLocale() method.
+    }
+
+    public function shouldSkipMiddleware()
+    {
+        // TODO: Implement shouldSkipMiddleware() method.
+    }
+
+    public function terminating($callback)
+    {
+        // TODO: Implement terminating() method.
+    }
+
+    public function terminate()
+    {
+        // TODO: Implement terminate() method.
     }
 }
