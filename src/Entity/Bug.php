@@ -26,7 +26,6 @@ class Bug
     #[ORM\Column(type: 'string')]
     private string $status;
 
-
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'assignedBugs')]
     private User|null $engineer = null;
 
